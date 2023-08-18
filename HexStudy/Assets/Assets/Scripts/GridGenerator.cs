@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,14 +15,21 @@ public class GridGenerator : MonoBehaviour
 
 
     //actual dimensions of our prefab for refference
-    private float hexWidth = 1.732f;
-    private float hexDepth = 2f;
+    public float hexWidth;
+    public float hexDepth;
 
     //zOffset is 0.75 * depth of the hex
     public float zOffset = 1.5f;
     //xOffset is half of the Width
     public float xOffset = 0.866f;
 
+    private void Start()
+    {
+        Mesh mesh = hexPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
+        Debug.Log(mesh.bounds.size.x * hexPrefab.transform.localScale.x + " " + mesh.bounds.size.z * hexPrefab.transform.localScale.z);
+        hexWidth = mesh.bounds.size.x * hexPrefab.transform.localScale.x;
+        hexDepth = mesh.bounds.size.z * hexPrefab.transform.localScale.z;
+    }
 
     /// <summary>
     /// Exposing below to inspector
