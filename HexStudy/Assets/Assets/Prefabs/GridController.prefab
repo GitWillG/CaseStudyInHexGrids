@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2490940386840269372}
+  - component: {fileID: 1843270119898904115}
   m_Layer: 0
   m_Name: GridController
   m_TagString: Untagged
@@ -31,3 +32,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1843270119898904115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9053463015252942170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fe17b655da065f4d9f8f7ec571bd4f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Width: 5
+  Depth: 5
+  hexPrefab: {fileID: 8011243967304543030, guid: 49b3feabc1cbf4148adc63095db0c2f4, type: 3}
+  zOffset: 1.5
+  xOffset: 0.866
