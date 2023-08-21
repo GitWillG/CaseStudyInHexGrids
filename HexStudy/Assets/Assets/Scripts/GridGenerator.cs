@@ -6,29 +6,30 @@ using UnityEngine;
 public class GridGenerator : MonoBehaviour
 {
     //number of tiles along x axis of grid
-    public int Width;
+    private int width;
     //number of tiles along z axis of grid
-    public int Depth;
+    private int depth;
 
     public GameObject hexPrefab;
-    public GameObject[,] hexArray;
+    private GameObject[,] hexArray;
 
 
+    private bool pointedTop;
     //actual dimensions of our prefab for refference
-    public float hexWidth;
-    public float hexDepth;
-
+    private float hexDepth;
+    private float hexWidth;
     //zOffset is 0.75 * depth of the hex
-    public float zOffset = 1.5f;
+    private float zOffset;
     //xOffset is half of the Width
-    public float xOffset = 0.866f;
+    private float xOffset;
 
-    private void Start()
+    public int Width { get => width; set => width = value; }
+    public int Depth { get => depth; set => depth = value; }
+    public GameObject[,] HexArray { get => hexArray; set => hexArray = value; }
+
+    private void Awake()
     {
-        Mesh mesh = hexPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
-        Debug.Log(mesh.bounds.size.x * hexPrefab.transform.localScale.x + " " + mesh.bounds.size.z * hexPrefab.transform.localScale.z);
-        hexWidth = mesh.bounds.size.x * hexPrefab.transform.localScale.x;
-        hexDepth = mesh.bounds.size.z * hexPrefab.transform.localScale.z;
+        if (hexPrefab != null) { AcquirePrefabDimensions(hexPrefab); }
     }
 
     /// <summary>
@@ -49,14 +50,14 @@ public class GridGenerator : MonoBehaviour
     {
         Width = gWidth;
         Depth = gDepth;
-        hexArray = new GameObject[Width, Depth];
+        HexArray = new GameObject[Width, Depth];
         //2 Dimension grid
         for (int x = 0; x < Width; x++)
         {
             for (int z = 0; z < Depth; z++)
             {
                 //Adjust x positioning based on tile width
-                float xPos = x * hexWidth;
+                float xPos = x  * hexWidth;
 
                 //every other row we offset the x position for the zig-zag positioning
                 if (z % 2 == 1)
@@ -64,11 +65,53 @@ public class GridGenerator : MonoBehaviour
                     xPos += xOffset;
                 }
                 //make a hex at the location and name it with its 2D dimensions
-                GameObject HexOb = (GameObject)Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, 90, 0));
+                GameObject HexOb;
+                //PointedTop -> needs to be rotated, because grid is generated on the assumption of flat tops
+                if (pointedTop)
+                {
+                    HexOb = (GameObject)Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, 90, 0));
+                }
+                //Flat top
+                else
+                {
+                    HexOb = (GameObject)Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, 0, 0));
+                }
                 HexOb.name = "Hex " + x + " " + z;
                 HexOb.transform.SetParent(this.gameObject.transform);
-                hexArray[x, z] = HexOb.gameObject;
+                HexArray[x, z] = HexOb.gameObject;
             }
         }
     }
+
+    /// <summary>
+    /// Calculates width and depth of a given hexagonal prefab. Also derives Z and X axis offsets. Assumes prefab is a true hexagonal shape.
+    /// </summary>
+    /// <param name="prefab">Given hexagonal prefab</param>
+    private void AcquirePrefabDimensions(GameObject prefab)
+    {
+        Mesh mesh = prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
+        float Diameter1 = mesh.bounds.size.x * hexPrefab.transform.localScale.x;
+        float Diameter2 = mesh.bounds.size.z * hexPrefab.transform.localScale.z;
+
+        //Rotate dimensions appropriately depending on if pointed top or flat top (Longer diameter is always the pointed side)
+        //Pointed tops
+        if (Diameter1 > Diameter2)
+        {
+            hexDepth = Diameter1;
+            hexWidth = Diameter2;
+            pointedTop = true;
+        }
+        //Flat top
+        else
+        {
+            hexDepth = Diameter2;
+            hexWidth = Diameter1;
+            pointedTop = false;
+        }
+
+        //calculate offsets
+        zOffset = 0.75f * hexDepth;
+        xOffset = hexWidth / 2;
+    }
+
 }
