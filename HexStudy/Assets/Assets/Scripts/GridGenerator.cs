@@ -8,37 +8,41 @@ public class GridGenerator : MonoBehaviour
     /// <summary>
     /// number of tiles along x axis of grid
     /// </summary>
-    private int width;
+    [SerializeField]private int width;
     /// <summary>
     /// number of tiles along z axis of grid
     /// </summary>
-    private int depth;
+    [SerializeField] private int depth;
 
     public GameObject hexPrefab;
     private GameObject[,] hexArray;
 
     /// <summary>
-    /// Hexes can either have pointed tops or flat sides. True if hex is a pointed top variant
+    /// Hexes can either have pointed tops or flat sides. True if hex is a pointed top variant.
     /// </summary>
     private bool isPointedTop;
     private float hexDepth;
     private float hexWidth;
     /// <summary>
-    /// Z axis spacing is always 75% of the height of a pointed top hex 
+    /// Z axis spacing is always 75% of the height of a pointed top hex.
     /// </summary>
     private float zOffset;
     /// <summary>
-    /// X axis offset on alternating rows is always half the width of a pointed top hex
+    /// X axis offset on alternating rows is always half the width of a pointed top hex.
     /// </summary>
     private float xOffset;
 
+    public GameObject[,] HexArray { get => hexArray; set => hexArray = value; }
     public int Width { get => width; set => width = value; }
     public int Depth { get => depth; set => depth = value; }
-    public GameObject[,] HexArray { get => hexArray; set => hexArray = value; }
 
     private void Awake()
     {
         if (hexPrefab != null) { AcquirePrefabDimensions(hexPrefab); }
+    }
+    private void Start()
+    {
+        DefaultGeneration();
     }
 
     /// <summary>
@@ -93,7 +97,7 @@ public class GridGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates width and depth of a given hexagonal prefab. Also derives Z and X axis offsets. Assumes prefab is a true hexagonal shape.
+    /// Gets the width and depth of a given hexagonal prefab from the mesh. Also derives Z and X axis offsets. Assumes prefab is a true hexagonal shape.
     /// </summary>
     /// <param name="prefab">Given hexagonal prefab</param>
     private void AcquirePrefabDimensions(GameObject prefab)
