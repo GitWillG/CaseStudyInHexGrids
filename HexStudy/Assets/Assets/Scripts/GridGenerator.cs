@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
+    public GameObject hexPrefab;
+
     /// <summary>
     /// number of tiles along x axis of grid
     /// </summary>
@@ -13,10 +15,7 @@ public class GridGenerator : MonoBehaviour
     /// number of tiles along z axis of grid
     /// </summary>
     [SerializeField] private int depth;
-
-    public GameObject hexPrefab;
     private GameObject[,] hexArray;
-
     /// <summary>
     /// Hexes can either have pointed tops or flat sides. True if hex is a pointed top variant.
     /// </summary>
@@ -31,6 +30,10 @@ public class GridGenerator : MonoBehaviour
     /// X axis offset on alternating rows is always half the width of a pointed top hex.
     /// </summary>
     private float xOffset;
+    /// <summary>
+    /// Rotation for hex prefab depending on if it is a pointed top hex or a flat top hex
+    /// </summary>
+    private float hexRotation;
 
     public GameObject[,] HexArray { get => hexArray; set => hexArray = value; }
     public int Width { get => width; set => width = value; }
@@ -45,9 +48,8 @@ public class GridGenerator : MonoBehaviour
         DefaultGeneration();
     }
 
-    /// <summary>
-    /// Exposing below to inspector
-    /// </summary>
+    
+    // Exposing below to inspector
     [ContextMenu("Generate Grid")]
     public void DefaultGeneration()
     {
@@ -57,12 +59,12 @@ public class GridGenerator : MonoBehaviour
     /// <summary>
     /// Generates a gWidth x gDepth grid of flat top hexes. Adjusts rotation if pointed top hexes are given as prefab.
     /// </summary>
-    /// <param name="gWidth">number of hexes along the x axis</param>
-    /// <param name="gDepth">number of hexes along the z axis</param>
-    public void GridGeneration(int gWidth, int gDepth)
+    /// <param name="gridWidth">number of hexes along the x axis</param>
+    /// <param name="gridDepth">number of hexes along the z axis</param>
+    public void GridGeneration(int gridWidth, int gridDepth)
     {
-        Width = gWidth;
-        Depth = gDepth;
+        Width = gridWidth;
+        Depth = gridDepth;
         HexArray = new GameObject[Width, Depth];
         //2 Dimension grid
         for (int x = 0; x < Width; x++)
@@ -78,20 +80,20 @@ public class GridGenerator : MonoBehaviour
                     xPos += xOffset;
                 }
                 //make a hex at the location and name it with its 2D dimensions
-                GameObject HexOb;
+                GameObject newHex;
                 //PointedTop -> needs to be rotated, because grid is generated on the assumption of flat tops
                 if (isPointedTop)
                 {
-                    HexOb = (GameObject)Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, 90, 0));
+                    newHex = Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, hexRotation, 0));
                 }
                 //Flat top
                 else
                 {
-                    HexOb = (GameObject)Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, 0, 0));
+                    newHex = Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, hexRotation, 0));
                 }
-                HexOb.name = "Hex " + x + " " + z;
-                HexOb.transform.SetParent(this.gameObject.transform);
-                HexArray[x, z] = HexOb.gameObject;
+                newHex.name = "Hex " + x + " " + z;
+                newHex.transform.SetParent(this.gameObject.transform);
+                HexArray[x, z] = newHex.gameObject;
             }
         }
     }
@@ -121,10 +123,23 @@ public class GridGenerator : MonoBehaviour
             hexWidth = Diameter1;
             isPointedTop = false;
         }
+        //isPointedTop = Diameter1 > Diameter2;
+        //hexDepth = isPointedTop ? Diameter1 : Diameter2;
+        //hexWidth = isPointedTop ? Diameter2 : Diameter1;
+        CalculateOrientationDerivatives();
 
-        //calculate offsets
-        zOffset = 0.75f * hexDepth; 
-        xOffset = hexWidth / 2; 
+    }
+
+    /// <summary>
+    /// Calculates constants that are defined after acquiring hex prefab's dimensions
+    /// </summary>
+    private void CalculateOrientationDerivatives()
+    {
+        //Calculate offsets
+        zOffset = 0.75f * hexDepth;
+        xOffset = hexWidth / 2;
+        //Determine rotation
+        hexRotation = isPointedTop ? 90 : 0;
     }
 
 }
