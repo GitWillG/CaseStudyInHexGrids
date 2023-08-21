@@ -5,22 +5,31 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
-    //number of tiles along x axis of grid
+    /// <summary>
+    /// number of tiles along x axis of grid
+    /// </summary>
     private int width;
-    //number of tiles along z axis of grid
+    /// <summary>
+    /// number of tiles along z axis of grid
+    /// </summary>
     private int depth;
 
     public GameObject hexPrefab;
     private GameObject[,] hexArray;
 
-
-    private bool pointedTop;
-    //actual dimensions of our prefab for refference
+    /// <summary>
+    /// Hexes can either have pointed tops or flat sides. True if hex is a pointed top variant
+    /// </summary>
+    private bool isPointedTop;
     private float hexDepth;
     private float hexWidth;
-    //zOffset is 0.75 * depth of the hex
+    /// <summary>
+    /// Z axis spacing is always 75% of the height of a pointed top hex 
+    /// </summary>
     private float zOffset;
-    //xOffset is half of the Width
+    /// <summary>
+    /// X axis offset on alternating rows is always half the width of a pointed top hex
+    /// </summary>
     private float xOffset;
 
     public int Width { get => width; set => width = value; }
@@ -67,7 +76,7 @@ public class GridGenerator : MonoBehaviour
                 //make a hex at the location and name it with its 2D dimensions
                 GameObject HexOb;
                 //PointedTop -> needs to be rotated, because grid is generated on the assumption of flat tops
-                if (pointedTop)
+                if (isPointedTop)
                 {
                     HexOb = (GameObject)Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, 90, 0));
                 }
@@ -99,19 +108,19 @@ public class GridGenerator : MonoBehaviour
         {
             hexDepth = Diameter1;
             hexWidth = Diameter2;
-            pointedTop = true;
+            isPointedTop = true;
         }
         //Flat top
         else
         {
             hexDepth = Diameter2;
             hexWidth = Diameter1;
-            pointedTop = false;
+            isPointedTop = false;
         }
 
         //calculate offsets
-        zOffset = 0.75f * hexDepth; //Z axis spacing is always 75% of the height of a pointed top hex 
-        xOffset = hexWidth / 2; //X axis offset on alternating rows is always half the width of a pointed top hex
+        zOffset = 0.75f * hexDepth; 
+        xOffset = hexWidth / 2; 
     }
 
 }
