@@ -63,3 +63,5 @@ sysinfo.txt
 *.bin
 
 # End of https://www.gitignore.io/api/unity
+HexStudy/Library/ArtifactDB
+HexStudy/Library/SourceAssetDB
