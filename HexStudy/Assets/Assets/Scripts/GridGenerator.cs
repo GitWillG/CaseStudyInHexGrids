@@ -42,7 +42,7 @@ public class GridGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Generates a gWidth x gDepth grid of hexes
+    /// Generates a gWidth x gDepth grid of flat top hexes. Adjusts rotation if pointed top hexes are given as prefab.
     /// </summary>
     /// <param name="gWidth">number of hexes along the x axis</param>
     /// <param name="gDepth">number of hexes along the z axis</param>
@@ -110,8 +110,8 @@ public class GridGenerator : MonoBehaviour
         }
 
         //calculate offsets
-        zOffset = 0.75f * hexDepth;
-        xOffset = hexWidth / 2;
+        zOffset = 0.75f * hexDepth; //Z axis spacing is always 75% of the height of a pointed top hex 
+        xOffset = hexWidth / 2; //X axis offset on alternating rows is always half the width of a pointed top hex
     }
 
 }
