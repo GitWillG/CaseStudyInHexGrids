@@ -98,13 +98,16 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
+
+    //TODO: Verify hex is actually a hexagon by comparing both diameters to a constant (that should exist for hexagons), throw exception if it fails.
+
     /// <summary>
     /// Gets the width and depth of a given hexagonal prefab from the mesh. Also derives Z and X axis offsets. Assumes prefab is a true hexagonal shape.
     /// </summary>
     /// <param name="prefab">Given hexagonal prefab</param>
     private void AcquirePrefabDimensions(GameObject prefab)
     {
-        Mesh mesh = prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
+        Mesh mesh = prefab.GetComponentInChildren<MeshFilter>().sharedMesh;// find better mthodology
         float Diameter1 = mesh.bounds.size.x * hexPrefab.transform.localScale.x;
         float Diameter2 = mesh.bounds.size.z * hexPrefab.transform.localScale.z;
 
