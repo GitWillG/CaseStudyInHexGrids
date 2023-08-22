@@ -9,12 +9,11 @@ public struct Face
     public List<Vector2> UVs { get; private set; }
     //public List<Vector3> Normals { get; private set; }
 
-    public Face(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs/*, List<Vector3> normals*/)
+    public Face(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs)
     {
         Vertices = vertices;
         Triangles = triangles;
         UVs = uvs;
-        //Normals = normals;
     }
 
 }
@@ -30,6 +29,10 @@ public class HexRenderer : MonoBehaviour
     private List<Face> HexFaces;
 
     public Material HexMaterial;
+    public float InnerHexRadius;
+    public float HexRadius;
+    public float Height;
+    public bool isFlatTopped;
 
     private void Awake()
     {
@@ -48,14 +51,16 @@ public class HexRenderer : MonoBehaviour
     {
         DrawMesh();
     }
-    
-    //private void OnValidate()
-    //{
-    //    if (Application.isPlaying)
-    //    {
-    //        DrawMesh();
-    //    }
-    //}
+
+    //comment out on play
+    private void OnValidate()
+    {
+        if (Application.isPlaying)
+        {
+            DrawMesh();
+        }
+    }
+
     void DrawMesh()
     {
         DrawFaces();
@@ -63,6 +68,11 @@ public class HexRenderer : MonoBehaviour
     }
     void DrawFaces()
     {
+        HexFaces = new List<Face>();
+        for (int point = 0; point < 6; point++)
+        {
+            HexFaces.Add(CreateFace(InnerHexRadius, HexRadius, Height / 2, Height / 2f, point));
+        }
 
     }
     void CombineFaces()
@@ -77,15 +87,43 @@ public class HexRenderer : MonoBehaviour
             HexUVs.AddRange(HexFaces[i].UVs);
 
             int Offset = (4 * i);
-            foreach (int triangle  in HexFaces[i].Triangles)
+            foreach (int triangle in HexFaces[i].Triangles)
             {
                 HexTriangles.Add(triangle+Offset);
-            }
+            } 
         }
 
         HexMesh.vertices = HexVertices.ToArray();
         HexMesh.triangles = HexTriangles.ToArray();
         HexMesh.uv = HexUVs.ToArray();
         HexMesh.RecalculateNormals();
+    }
+
+    private Face CreateFace(float innerRadius, float outerRadius, float heightA, float heightB, int point, bool reverse = false)
+    {
+        Vector3 pointA = GetPoint(innerRadius, heightB, point);
+        Vector3 pointB = GetPoint(innerRadius, heightB, (point < 5) ? point + 1 : 0);
+        Vector3 pointC = GetPoint(outerRadius, heightA, (point < 5) ? point + 1 : 0);
+        Vector3 pointD = GetPoint(outerRadius, heightA, point);
+
+        List<Vector3> vertices = new List<Vector3>() {pointA, pointB, pointC, pointD };
+        List<int> triangles = new List<int>() { 0, 1, 2, 2, 3, 0 };
+        List<Vector2> uvs = new List<Vector2>() { new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1) };
+        if (reverse)
+        {
+            triangles.Reverse();
+        }
+
+        return new Face(vertices, triangles, uvs);
+
+    }
+
+    protected Vector3 GetPoint(float size, float height, int index)
+    {
+        float angle_deg = isFlatTopped ? 60 * index: 60 * index - 30;
+        float angle_rad = Mathf.PI / 180f * angle_deg;
+        return new Vector3 ((size * Mathf.Cos(angle_rad)), height, size * Mathf.Sin(angle_rad));
+
+
     }
 }
