@@ -142,7 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HexMaterial: {fileID: 2100000, guid: 6761f285556c2f647a601aea84420814, type: 2}
   InnerHexRadius: 0
-  HexRadius: 1
+  HexRadius: 0.99
   Height: 1
   isFlatTopped: 1
 --- !u!23 &657480143
@@ -405,12 +405,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1843270119898904115, guid: d42171b364db2d9419ea61266fe28082, type: 3}
+      propertyPath: hexPrefab
+      value: 
+      objectReference: {fileID: 8011243967304543030, guid: 49b3feabc1cbf4148adc63095db0c2f4, type: 3}
+    - target: {fileID: 1843270119898904115, guid: d42171b364db2d9419ea61266fe28082, type: 3}
       propertyPath: hexRenderer
       value: 
       objectReference: {fileID: 657480142}
     - target: {fileID: 1843270119898904115, guid: d42171b364db2d9419ea61266fe28082, type: 3}
       propertyPath: isPrefabValid
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1843270119898904115, guid: d42171b364db2d9419ea61266fe28082, type: 3}
+      propertyPath: angleTolerance
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1843270119898904115, guid: d42171b364db2d9419ea61266fe28082, type: 3}
+      propertyPath: parallelTolerance
+      value: 1.32
       objectReference: {fileID: 0}
     - target: {fileID: 2490940386840269372, guid: d42171b364db2d9419ea61266fe28082, type: 3}
       propertyPath: m_RootOrder

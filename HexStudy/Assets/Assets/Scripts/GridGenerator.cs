@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
@@ -8,11 +10,14 @@ public class GridGenerator : MonoBehaviour
     public GameObject hexPrefab;
     public HexRenderer hexRenderer;
     public bool isPrefabValid;
+    public float parallelTolerance = 0.5f; // Tolerance for parallelism check
+    public int hexagonalVerticesCount = 6; // Number of vertices in a hexagon
+
 
     /// <summary>
     /// number of tiles along x axis of grid
     /// </summary>
-    [SerializeField]private int width;
+    [SerializeField] private int width;
     /// <summary>
     /// number of tiles along z axis of grid
     /// </summary>
@@ -44,13 +49,14 @@ public class GridGenerator : MonoBehaviour
     private void Awake()
     {
         if (hexPrefab != null) { AcquirePrefabDimensions(hexPrefab); }
+        VerifyHexagonalMesh(hexPrefab);
     }
     private void Start()
     {
         DefaultGeneration();
     }
 
-    
+
     // Exposing below to inspector
     [ContextMenu("Generate Grid")]
     public void DefaultGeneration()
@@ -74,7 +80,7 @@ public class GridGenerator : MonoBehaviour
             for (int z = 0; z < Depth; z++)
             {
                 //Adjust x positioning based on tile width
-                float xPos = x  * hexWidth;
+                float xPos = x * hexWidth;
 
                 //every other row we offset the x position for the zig-zag positioning
                 if (z % 2 == 1)
@@ -159,6 +165,80 @@ public class GridGenerator : MonoBehaviour
         hexRotation = isPointedTop ? 90 : 0;
     }
 
+    bool IsHexagonalPrism(Mesh mesh)
+    {
+        Vector3[] vertices = mesh.vertices;
+        int[][] faces = new int[mesh.triangles.Length / 3][];
 
+        for (int i = 0; i < faces.Length; i++)
+        {
+            faces[i] = new int[] { mesh.triangles[i * 3], mesh.triangles[i * 3 + 1], mesh.triangles[i * 3 + 2] };
+        }
 
+        // Perform checks for hexagonal prism
+        if (faces.Length != 8 || vertices.Length != 12)
+        {
+            return false;
+        }
+
+        int hexagonalVertexCount = 0;
+        foreach (int[] face in faces)
+        {
+            if (face.Length != 3)
+            {
+                return false;
+            }
+
+            if (face.Distinct().Count() != 3)
+            {
+                return false;
+            }
+
+            if (face.All(v => vertices[face[0]] == vertices[v]))
+            {
+                hexagonalVertexCount++;
+            }
+        }
+
+        if (hexagonalVertexCount != hexagonalVerticesCount)
+        {
+            return false;
+        }
+
+        // Perform checks for parallel faces
+        List<Vector3> lateralEdges = new List<Vector3>();
+        for (int i = 1; i < 7; i++)
+        {
+            Vector3 edge = vertices[faces[i][1]] - vertices[faces[i][0]];
+            lateralEdges.Add(edge.normalized);
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            float dot = Vector3.Dot(lateralEdges[i], lateralEdges[i + 3]);
+            if (Mathf.Abs(dot) > 1 - parallelTolerance)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    void VerifyHexagonalMesh(GameObject prefab)
+    {
+        MeshFilter[] meshFilters = prefab.GetComponentsInChildren<MeshFilter>();
+
+        foreach (MeshFilter meshFilter in meshFilters)
+        {
+            if (IsHexagonalPrism(meshFilter.sharedMesh))
+            {
+                isPrefabValid = true;
+            }
+            else
+            {
+                isPrefabValid = false;
+                Debug.Log($"The mesh of object '{meshFilter.gameObject.name}' is not a hexagonal prism.");
+            }
+        }
+    }
 }
