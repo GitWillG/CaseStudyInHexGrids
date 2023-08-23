@@ -43,14 +43,14 @@ public class HexRenderer : MonoBehaviour
         HexMesh.name = "Hex";
 
         HexMeshFilter.mesh = HexMesh;
-        HexMeshRenderer.material = HexMaterial;
         
     }
 
-    void OnEnable()
-    {
-        DrawMesh();
-    }
+    //Removed and put inside the UseDefault method.
+    //void OnEnable()
+    //{
+    //        DrawMesh();
+    //}
 
     //comment out on play
     private void OnValidate()
@@ -63,6 +63,7 @@ public class HexRenderer : MonoBehaviour
 
     void DrawMesh()
     {
+        HexMeshRenderer.material = HexMaterial;
         DrawFaces();
         CombineFaces();
     }
@@ -124,6 +125,24 @@ public class HexRenderer : MonoBehaviour
         float angle_rad = Mathf.PI / 180f * angle_deg;
         return new Vector3 ((size * Mathf.Cos(angle_rad)), height, size * Mathf.Sin(angle_rad));
 
+    }
 
+    /// <summary>
+    /// Renders a hex using assigned defaults
+    /// </summary>
+    /// <returns>A GameObject hex with associated renderers</returns>
+    public GameObject RenderHex()
+    {
+        GameObject hex = new GameObject("Hex", typeof(HexRenderer));
+
+        HexRenderer hexRenderer = hex.GetComponent<HexRenderer>();
+        hexRenderer.Height = Height;
+        hexRenderer.InnerHexRadius = InnerHexRadius;
+        hexRenderer.HexRadius = HexRadius;
+        hexRenderer.isFlatTopped = isFlatTopped;
+        hexRenderer.HexMaterial = HexMaterial;
+        hexRenderer.DrawMesh();
+
+        return hex;
     }
 }

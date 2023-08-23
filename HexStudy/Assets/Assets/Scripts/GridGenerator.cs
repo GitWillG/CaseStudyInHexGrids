@@ -6,6 +6,8 @@ using UnityEngine;
 public class GridGenerator : MonoBehaviour
 {
     public GameObject hexPrefab;
+    public HexRenderer hexRenderer;
+    public bool isPrefabValid;
 
     /// <summary>
     /// number of tiles along x axis of grid
@@ -81,17 +83,29 @@ public class GridGenerator : MonoBehaviour
                 }
                 //make a hex at the location and name it with its 2D dimensions
                 GameObject newHex;
-                //PointedTop -> needs to be rotated, because grid is generated on the assumption of flat tops
-                if (isPointedTop)
+
+                //If given prefab isn't valud render some defaults
+                if (!isPrefabValid)
                 {
-                    newHex = Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, hexRotation, 0));
+                    newHex = hexRenderer.RenderHex();
                 }
-                //Flat top
+
+                //if prefab is valid we instantiate it
                 else
                 {
-                    newHex = Instantiate(hexPrefab, new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, hexRotation, 0));
+                    //pointedtop -> needs to be rotated, because grid is generated on the assumption of flat tops
+                    if (isPointedTop)
+                    {
+                        newHex = Instantiate(hexPrefab);
+                    }
+                    //flat top
+                    else
+                    {
+                        newHex = Instantiate(hexPrefab);
+                    }
                 }
-                newHex.name = "Hex " + x + " " + z;
+                newHex.name = "hex " + x + " " + z;
+                newHex.transform.SetPositionAndRotation(new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, hexRotation, 0));
                 newHex.transform.SetParent(this.gameObject.transform);
                 HexArray[x, z] = newHex.gameObject;
             }
@@ -144,5 +158,7 @@ public class GridGenerator : MonoBehaviour
         //Determine rotation
         hexRotation = isPointedTop ? 90 : 0;
     }
+
+
 
 }
