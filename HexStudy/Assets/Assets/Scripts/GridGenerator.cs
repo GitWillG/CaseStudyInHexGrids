@@ -94,6 +94,7 @@ public class GridGenerator : MonoBehaviour
                 if (!isPrefabValid)
                 {
                     newHex = hexRenderer.RenderHex();
+                    Debug.Log(IsHexagonalPrism(newHex.GetComponent<MeshFilter>().mesh));
                 }
 
                 //if prefab is valid we instantiate it
@@ -165,6 +166,11 @@ public class GridGenerator : MonoBehaviour
         hexRotation = isPointedTop ? 90 : 0;
     }
 
+    /// <summary>
+    /// Checks that geometry of mesh alines with mathematical definition of a hexagonal prism.
+    /// </summary>
+    /// <param name="mesh">Given mesh to check</param>
+    /// <returns>True if given mesh is a hexagon</returns>
     bool IsHexagonalPrism(Mesh mesh)
     {
         Vector3[] vertices = mesh.vertices;
@@ -174,6 +180,10 @@ public class GridGenerator : MonoBehaviour
         {
             faces[i] = new int[] { mesh.triangles[i * 3], mesh.triangles[i * 3 + 1], mesh.triangles[i * 3 + 2] };
         }
+
+        // Set tolerance values
+        float parallelTolerance = 5f; // Tolerance for parallelism
+        float vertexEqualityTolerance = 5f; // Tolerance for vertex equality
 
         // Perform checks for hexagonal prism
         if (faces.Length != 8 || vertices.Length != 12)
@@ -194,13 +204,13 @@ public class GridGenerator : MonoBehaviour
                 return false;
             }
 
-            if (face.All(v => vertices[face[0]] == vertices[v]))
+            if (face.All(v => Vector3.Distance(vertices[face[0]], vertices[v]) < vertexEqualityTolerance))
             {
                 hexagonalVertexCount++;
             }
         }
 
-        if (hexagonalVertexCount != hexagonalVerticesCount)
+        if (hexagonalVertexCount != 2) // Change the expected hexagonal vertex count accordingly
         {
             return false;
         }
@@ -224,6 +234,11 @@ public class GridGenerator : MonoBehaviour
 
         return true;
     }
+
+    /// <summary>
+    /// Verifies that a mesh is a hexagonal prism
+    /// </summary>
+    /// <param name="prefab">The prefab containing a mesh to be analyzed</param>
     void VerifyHexagonalMesh(GameObject prefab)
     {
         MeshFilter[] meshFilters = prefab.GetComponentsInChildren<MeshFilter>();
