@@ -33,6 +33,8 @@ public class HexRenderer : MonoBehaviour
     public float HexRadius;
     public float Height;
     public bool isFlatTopped;
+    public Vector2 HexHeightRanges;
+    public bool RandomizeHexHeights;
 
     private void Awake()
     {
@@ -63,6 +65,11 @@ public class HexRenderer : MonoBehaviour
     void DrawMesh()
     {
         HexMeshRenderer.material = HexMaterial;
+        if (RandomizeHexHeights) 
+        {
+            Debug.Log("sdfads");
+            RandomizeHeightWithinRanges(); 
+        }
         DrawFaces();
         CombineFaces();
     }
@@ -169,6 +176,8 @@ public class HexRenderer : MonoBehaviour
         GameObject hex = new GameObject("Hex", typeof(HexRenderer));
 
         HexRenderer hexRenderer = hex.GetComponent<HexRenderer>();
+        hexRenderer.RandomizeHexHeights = RandomizeHexHeights;
+        hexRenderer.HexHeightRanges = HexHeightRanges;
         hexRenderer.Height = Height;
         hexRenderer.InnerHexRadius = InnerHexRadius;
         hexRenderer.HexRadius = HexRadius;
@@ -177,5 +186,15 @@ public class HexRenderer : MonoBehaviour
         hexRenderer.DrawMesh();
 
         return hex;
+    }
+
+    /// <summary>
+    /// Randomizes the height of hexes within a given range
+    /// </summary>
+    public void RandomizeHeightWithinRanges()
+    {
+        float RandomHeightInRange = Random.Range(HexHeightRanges.x, HexHeightRanges.y);
+        Height = RandomHeightInRange;
+        Debug.Log(Height);
     }
 }
