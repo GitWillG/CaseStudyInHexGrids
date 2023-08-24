@@ -409,7 +409,7 @@ PrefabInstance:
     - target: {fileID: 1843270119898904115, guid: d42171b364db2d9419ea61266fe28082, type: 3}
       propertyPath: hexPrefab
       value: 
-      objectReference: {fileID: 7852750048317711049, guid: 823741e020add4443bd21cc931876e7c, type: 3}
+      objectReference: {fileID: 8011243967304543030, guid: 49b3feabc1cbf4148adc63095db0c2f4, type: 3}
     - target: {fileID: 1843270119898904115, guid: d42171b364db2d9419ea61266fe28082, type: 3}
       propertyPath: hexRenderer
       value: 
@@ -424,7 +424,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1843270119898904115, guid: d42171b364db2d9419ea61266fe28082, type: 3}
       propertyPath: parallelTolerance
-      value: 1.32
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 2490940386840269372, guid: d42171b364db2d9419ea61266fe28082, type: 3}
       propertyPath: m_RootOrder

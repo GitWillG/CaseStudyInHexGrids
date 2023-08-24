@@ -10,8 +10,6 @@ public class GridGenerator : MonoBehaviour
     public GameObject hexPrefab;
     public HexRenderer hexRenderer;
     public bool isPrefabValid;
-    public float parallelTolerance = 0.5f; // Tolerance for parallelism check
-    public int hexagonalVerticesCount = 6; // Number of vertices in a hexagon
 
 
     /// <summary>
@@ -182,46 +180,10 @@ public class GridGenerator : MonoBehaviour
             faces[i] = new int[] { mesh.triangles[i * 3], mesh.triangles[i * 3 + 1], mesh.triangles[i * 3 + 2] };
         }
 
-        // Set tolerance values
-        float parallelTolerance = 5f; // Tolerance for parallelism
-        float vertexEqualityTolerance = 5f; // Tolerance for vertex equality
+        // Set tolerance value
+        float parallelTolerance = 0.01f;
 
-        // Perform checks for hexagonal prism
-        if (faces.Length != 8 || vertices.Length != 12) //Learning moment
-        {
-
-            Debug.Log("face number failure, Length" + faces.Length + " Vertices:" + vertices.Length);
-            return false;
-        }
-
-        int hexagonalVertexCount = 0;
-        foreach (int[] face in faces)
-        {
-            if (face.Length != 3)
-            {
-                Debug.Log("facecount failure");
-                return false;
-            }
-
-            if (face.Distinct().Count() != 3)
-            {
-                Debug.Log("facecount distinct failure");
-                return false;
-            }
-
-            if (face.All(v => Vector3.Distance(vertices[face[0]], vertices[v]) < vertexEqualityTolerance))
-            {
-                hexagonalVertexCount++;
-            }
-        }
-
-        if (hexagonalVertexCount != 2) // Change the expected hexagonal vertex count accordingly
-        {
-            Debug.Log("vertex count failure" + hexagonalVertexCount);
-            return false;
-        }
-
-        // Perform checks for lateral faces
+        // Perform checks for lateral faces ensuring that there are 6 lateral faces or a multiple therof 
         bool[] isFaceLateral = new bool[faces.Length];
         int lateralFaceCount = 0;
 
@@ -239,12 +201,11 @@ public class GridGenerator : MonoBehaviour
             }
         }
 
-        if (lateralFaceCount % 6 != 0) // Hexagonal prisms have 6 lateral faces, but meshes may have any multiple of this
+        if (lateralFaceCount % 6 != 0) // Hexagonal prisms have 6 lateral faces, but meshes may have a multiple of this
         {
-            Debug.Log("lateral face count failue" + lateralFaceCount);
+            Debug.Log("lateral face count failue");
             return false;
         }
-
         return true;
     }
 
