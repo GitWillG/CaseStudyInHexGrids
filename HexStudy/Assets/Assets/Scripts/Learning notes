@@ -2,3 +2,6 @@ Learning notes:
 
 Determining if a hexagon is a hexagon is more difficult than one would imagine, not because of the geometry but rather because of optimization practices.
 When creating a mesh, in order to reduce the rendering costs faces that will never be visible are often deleted alongside the related verticies and vertexes.
+
+A simplistic method of verifying that there are 6 lateral faces works sufficiently well for any top down game where we can safely assume the orientation (note: not y-axis rotation) of the hexagonal prism.
+This assumption is safe to make as we are not rotating the hex along any other axis anyways, so Hex meshes that are inserted into the project need to be oriented correctly manually regardless.
