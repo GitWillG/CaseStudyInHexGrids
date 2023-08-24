@@ -94,7 +94,6 @@ public class GridGenerator : MonoBehaviour
                 if (!isPrefabValid)
                 {
                     newHex = hexRenderer.RenderHex();
-                    Debug.Log(IsHexagonalPrism(newHex.GetComponent<MeshFilter>().mesh));
                 }
 
                 //if prefab is valid we instantiate it
@@ -120,7 +119,7 @@ public class GridGenerator : MonoBehaviour
     }
 
 
-    //TODO: Verify hex is actually a hexagon by comparing both diameters to a constant (that should exist for hexagons), throw exception if it fails.
+    //TODO: Move hexagonal verification into it's own class
 
     /// <summary>
     /// Gets the width and depth of a given hexagonal prefab from the mesh. Also derives Z and X axis offsets. Assumes prefab is a true hexagonal shape.
@@ -203,7 +202,7 @@ public class GridGenerator : MonoBehaviour
 
         if (lateralFaceCount % 6 != 0) // Hexagonal prisms have 6 lateral faces, but meshes may have a multiple of this
         {
-            Debug.Log("lateral face count failue");
+            Debug.Log("This mesh does not have 6 lateral faces (A geometric property of hexagonal prisms)");
             return false;
         }
         return true;
