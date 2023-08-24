@@ -24,9 +24,9 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] private int depth;
     private GameObject[,] hexArray;
     /// <summary>
-    /// Hexes can either have pointed tops or flat sides. True if hex is a pointed top variant.
+    /// Hexes can either have pointed tops or flat sides. True if hex is a flat top variant.
     /// </summary>
-    private bool isPointedTop;
+    private bool isFlatTopped;
     private float hexDepth;
     private float hexWidth;
     /// <summary>
@@ -48,8 +48,10 @@ public class GridGenerator : MonoBehaviour
 
     private void Awake()
     {
-        if (hexPrefab != null) { AcquirePrefabDimensions(hexPrefab); }  
-        VerifyHexagonalMesh(hexPrefab);
+        if (hexPrefab != null)
+        {
+            VerifyHexagonalMesh(hexPrefab);
+        }  
     }
     private void Start()
     {
@@ -101,7 +103,7 @@ public class GridGenerator : MonoBehaviour
                 else
                 {
                     //pointedtop -> needs to be rotated, because grid is generated on the assumption of flat tops
-                    if (isPointedTop)
+                    if (!isFlatTopped)
                     {
                         newHex = Instantiate(hexPrefab);
                     }
@@ -138,19 +140,18 @@ public class GridGenerator : MonoBehaviour
         {
             hexDepth = Diameter1;
             hexWidth = Diameter2;
-            isPointedTop = true;
+            isFlatTopped = true;
         }
         //Flat top
         else
         {
             hexDepth = Diameter2;
             hexWidth = Diameter1;
-            isPointedTop = false;
+            isFlatTopped = false;
         }
         //isPointedTop = Diameter1 > Diameter2;
         //hexDepth = isPointedTop ? Diameter1 : Diameter2;
         //hexWidth = isPointedTop ? Diameter2 : Diameter1;
-        CalculateOrientationDerivatives();
 
     }
 
@@ -163,7 +164,7 @@ public class GridGenerator : MonoBehaviour
         zOffset = 0.75f * hexDepth;
         xOffset = hexWidth / 2;
         //Determine rotation
-        hexRotation = isPointedTop ? 90 : 0;
+        hexRotation = isFlatTopped ? 90 : 0;
     }
 
     /// <summary>
@@ -186,8 +187,10 @@ public class GridGenerator : MonoBehaviour
         float vertexEqualityTolerance = 5f; // Tolerance for vertex equality
 
         // Perform checks for hexagonal prism
-        if (faces.Length != 8 || vertices.Length != 12)
+        if (faces.Length != 8 || vertices.Length != 12) //Learning moment
         {
+
+            Debug.Log("face number failure, Length" + faces.Length + " Vertices:" + vertices.Length);
             return false;
         }
 
@@ -196,11 +199,13 @@ public class GridGenerator : MonoBehaviour
         {
             if (face.Length != 3)
             {
+                Debug.Log("facecount failure");
                 return false;
             }
 
             if (face.Distinct().Count() != 3)
             {
+                Debug.Log("facecount distinct failure");
                 return false;
             }
 
@@ -212,24 +217,32 @@ public class GridGenerator : MonoBehaviour
 
         if (hexagonalVertexCount != 2) // Change the expected hexagonal vertex count accordingly
         {
+            Debug.Log("vertex count failure" + hexagonalVertexCount);
             return false;
         }
 
-        // Perform checks for parallel faces
-        List<Vector3> lateralEdges = new List<Vector3>();
-        for (int i = 1; i < 7; i++)
+        // Perform checks for lateral faces
+        bool[] isFaceLateral = new bool[faces.Length];
+        int lateralFaceCount = 0;
+
+        for (int i = 0; i < faces.Length; i++)
         {
-            Vector3 edge = vertices[faces[i][1]] - vertices[faces[i][0]];
-            lateralEdges.Add(edge.normalized);
+            int[] face = faces[i];
+
+            Vector3 faceNormal = Vector3.Cross(vertices[face[1]] - vertices[face[0]], vertices[face[2]] - vertices[face[0]]).normalized;
+            float dot = Vector3.Dot(faceNormal, Vector3.up); // Assuming the hexagonal prism is aligned with the world up direction
+
+            if (Mathf.Abs(dot) < 1 - parallelTolerance)
+            {
+                isFaceLateral[i] = true;
+                lateralFaceCount++;
+            }
         }
 
-        for (int i = 0; i < 3; i++)
+        if (lateralFaceCount % 6 != 0) // Hexagonal prisms have 6 lateral faces, but meshes may have any multiple of this
         {
-            float dot = Vector3.Dot(lateralEdges[i], lateralEdges[i + 3]);
-            if (Mathf.Abs(dot) > 1 - parallelTolerance)
-            {
-                return false;
-            }
+            Debug.Log("lateral face count failue" + lateralFaceCount);
+            return false;
         }
 
         return true;
@@ -248,12 +261,17 @@ public class GridGenerator : MonoBehaviour
             if (IsHexagonalPrism(meshFilter.sharedMesh))
             {
                 isPrefabValid = true;
+                AcquirePrefabDimensions(hexPrefab);
             }
             else
             {
                 isPrefabValid = false;
                 Debug.Log($"The mesh of object '{meshFilter.gameObject.name}' is not a hexagonal prism.");
+                hexDepth = hexRenderer.HexRadius * 2;
+                hexWidth = (float)(Math.Sqrt(3) * hexRenderer.HexRadius);
+                isFlatTopped = hexRenderer.isFlatTopped;
             }
+            CalculateOrientationDerivatives();
         }
     }
 }

@@ -65,11 +65,7 @@ public class HexRenderer : MonoBehaviour
     void DrawMesh()
     {
         HexMeshRenderer.material = HexMaterial;
-        if (RandomizeHexHeights) 
-        {
-            Debug.Log("sdfads");
-            RandomizeHeightWithinRanges(); 
-        }
+        if (RandomizeHexHeights) { RandomizeHeightWithinRanges(); }
         DrawFaces();
         CombineFaces();
     }
@@ -195,6 +191,5 @@ public class HexRenderer : MonoBehaviour
     {
         float RandomHeightInRange = Random.Range(HexHeightRanges.x, HexHeightRanges.y);
         Height = RandomHeightInRange;
-        Debug.Log(Height);
     }
 }
