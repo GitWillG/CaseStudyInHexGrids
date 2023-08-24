@@ -7,13 +7,16 @@ The following are learning goals and target systems for optimization:
 1. Efficient and scalable methodology of grid creation utilizing:
    
      A) hexes and hexagonal mesh procedural generation.
+   
      B) given external meshes that are expected to be hexagonal prisms
   
 3. Simplistic birds eye view camera controller
 4. pathfinding on a non-square grid system that:
    
      A) Accounts for obstructions
+   
      B) Vizualizes given movement ranges and pathing
+   
   
 6. Data handlers that exist within hexes for various "characters" that will want variable "statistics"
 
