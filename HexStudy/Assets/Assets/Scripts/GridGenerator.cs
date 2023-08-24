@@ -48,7 +48,7 @@ public class GridGenerator : MonoBehaviour
 
     private void Awake()
     {
-        if (hexPrefab != null) { AcquirePrefabDimensions(hexPrefab); }
+        if (hexPrefab != null) { AcquirePrefabDimensions(hexPrefab); }  
         VerifyHexagonalMesh(hexPrefab);
     }
     private void Start()
