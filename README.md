@@ -19,7 +19,7 @@ The following are learning goals and target systems for optimization:
    
   
 4. Data handlers that exist within hexes for various "characters" that will want variable "statistics"
-5. Regularly used shaders, such as outline, highlighting, fog (of war), and bobbing element.
+5. Regularly used shaders such as: outline, highlighting, fog (of war), and bobbing element.
 
 
 The result of this case study is to posses a deep understanding of these systems and how to optimize them. Along with a robust and usable skeleton that can be used in future related projects.
