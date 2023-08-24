@@ -1,0 +1,4 @@
+Learning notes:
+
+Determining if a hexagon is a hexagon is more difficult than one would imagine, not because of the geometry but rather because of optimization practices.
+When creating a mesh, in order to reduce the rendering costs faces that will never be visible are often deleted alongside the related verticies and vertexes.
