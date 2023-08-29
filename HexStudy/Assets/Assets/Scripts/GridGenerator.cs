@@ -5,11 +5,14 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(MeshShapeVerifier))]
 public class GridGenerator : MonoBehaviour
 {
     public GameObject hexPrefab;
     public HexRenderer hexRenderer;
     public bool isPrefabValid;
+
+    private Vector2 HexWidthDepth;
 
 
     /// <summary>
@@ -39,6 +42,7 @@ public class GridGenerator : MonoBehaviour
     /// Rotation for hex prefab depending on if it is a pointed top hex or a flat top hex
     /// </summary>
     private float hexRotation;
+    private MeshShapeVerifier HexagonalShapeVerifier;
 
     public GameObject[,] HexArray { get => hexArray; set => hexArray = value; }
     public int Width { get => width; set => width = value; }
@@ -46,13 +50,23 @@ public class GridGenerator : MonoBehaviour
 
     private void Awake()
     {
+        HexagonalShapeVerifier = transform.GetComponent<MeshShapeVerifier>();
         if (hexPrefab != null)
         {
-            VerifyHexagonalMesh(hexPrefab);
+            isPrefabValid = HexagonalShapeVerifier.VerifyHexagonalMesh(hexPrefab);
         }  
     }
     private void Start()
     {
+        if (isPrefabValid)
+        {
+            AcquirePrefabDimensions(hexPrefab);
+        }
+        else
+        {
+            isFlatTopped = hexRenderer.ReturnHexDimensions(out hexWidth, out hexDepth);
+        }
+        CalculateOrientationDerivatives();
         DefaultGeneration();
     }
 
@@ -71,6 +85,7 @@ public class GridGenerator : MonoBehaviour
     /// <param name="gridDepth">number of hexes along the z axis</param>
     public void GridGeneration(int gridWidth, int gridDepth)
     {
+        GameObject newHex;
         Width = gridWidth;
         Depth = gridDepth;
         HexArray = new GameObject[Width, Depth];
@@ -87,8 +102,6 @@ public class GridGenerator : MonoBehaviour
                 {
                     xPos += xOffset;
                 }
-                //make a hex at the location and name it with its 2D dimensions
-                GameObject newHex;
 
                 //If given prefab isn't valud render some defaults
                 if (!isPrefabValid)
@@ -110,6 +123,7 @@ public class GridGenerator : MonoBehaviour
                         newHex = Instantiate(hexPrefab);
                     }
                 }
+                //make a hex at the location and name it with its 2D dimensions
                 newHex.name = "hex " + x + " " + z;
                 newHex.transform.SetPositionAndRotation(new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, hexRotation, 0));
                 newHex.transform.SetParent(this.gameObject.transform);
@@ -164,74 +178,5 @@ public class GridGenerator : MonoBehaviour
         hexRotation = isFlatTopped ? 90 : 0;
     }
 
-    /// <summary>
-    /// Checks that geometry of mesh alines with mathematical definition of a hexagonal prism.
-    /// </summary>
-    /// <param name="mesh">Given mesh to check</param>
-    /// <returns>True if given mesh is a hexagon</returns>
-    bool IsHexagonalPrism(Mesh mesh)
-    {
-        Vector3[] vertices = mesh.vertices;
-        int[][] faces = new int[mesh.triangles.Length / 3][];
-
-        for (int i = 0; i < faces.Length; i++)
-        {
-            faces[i] = new int[] { mesh.triangles[i * 3], mesh.triangles[i * 3 + 1], mesh.triangles[i * 3 + 2] };
-        }
-
-        // Set tolerance value
-        float parallelTolerance = 0.01f;
-
-        // Perform checks for lateral faces ensuring that there are 6 lateral faces or a multiple therof 
-        bool[] isFaceLateral = new bool[faces.Length];
-        int lateralFaceCount = 0;
-
-        for (int i = 0; i < faces.Length; i++)
-        {
-            int[] face = faces[i];
-
-            Vector3 faceNormal = Vector3.Cross(vertices[face[1]] - vertices[face[0]], vertices[face[2]] - vertices[face[0]]).normalized;
-            float dot = Vector3.Dot(faceNormal, Vector3.up); // Assuming the hexagonal prism is aligned with the world up direction
-
-            if (Mathf.Abs(dot) < 1 - parallelTolerance)
-            {
-                isFaceLateral[i] = true;
-                lateralFaceCount++;
-            }
-        }
-
-        if (lateralFaceCount % 6 != 0) // Hexagonal prisms have 6 lateral faces, but meshes may have a multiple of this
-        {
-            Debug.Log("This mesh does not have 6 lateral faces (A geometric property of hexagonal prisms)");
-            return false;
-        }
-        return true;
-    }
-
-    /// <summary>
-    /// Verifies that a mesh is a hexagonal prism
-    /// </summary>
-    /// <param name="prefab">The prefab containing a mesh to be analyzed</param>
-    void VerifyHexagonalMesh(GameObject prefab)
-    {
-        MeshFilter[] meshFilters = prefab.GetComponentsInChildren<MeshFilter>();
-
-        foreach (MeshFilter meshFilter in meshFilters)
-        {
-            if (IsHexagonalPrism(meshFilter.sharedMesh))
-            {
-                isPrefabValid = true;
-                AcquirePrefabDimensions(hexPrefab);
-            }
-            else
-            {
-                isPrefabValid = false;
-                Debug.Log($"The mesh of object '{meshFilter.gameObject.name}' is not a hexagonal prism.");
-                hexDepth = hexRenderer.HexRadius * 2;
-                hexWidth = (float)(Math.Sqrt(3) * hexRenderer.HexRadius);
-                isFlatTopped = hexRenderer.isFlatTopped;
-            }
-            CalculateOrientationDerivatives();
-        }
-    }
+  
 }

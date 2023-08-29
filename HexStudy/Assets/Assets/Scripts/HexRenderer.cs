@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -189,7 +190,22 @@ public class HexRenderer : MonoBehaviour
     /// </summary>
     public void RandomizeHeightWithinRanges()
     {
-        float RandomHeightInRange = Random.Range(HexHeightRanges.x, HexHeightRanges.y);
+        float RandomHeightInRange = UnityEngine.Random.Range(HexHeightRanges.x, HexHeightRanges.y);
         Height = RandomHeightInRange;
+    }
+
+    /// <summary>
+    /// Returns orientation (flat-topped or not), as well as hex width and depth
+    /// </summary>
+    /// <param name="hexWidth">Calculated hex width</param>
+    /// <param name="hexDepth">Calulated hex depth</param>
+    /// <returns>True if hex is flat topped</returns>
+    public bool ReturnHexDimensions(out float hexWidth, out float hexDepth)
+    {
+        hexDepth = HexRadius * 2;
+        hexWidth = (float)(Math.Sqrt(3) * HexRadius);
+
+
+        return isFlatTopped;
     }
 }
