@@ -7,6 +7,8 @@ public class GridHex : MonoBehaviour, IDataHandler
     private List<UnitSO> containedUnits;
     public bool isOccupied;
 
+    List<UnitSO> IDataHandler.containedUnits { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
     public List<UnitSO> GetData()
     {
         if (containedUnits == null) { return null; }
@@ -23,10 +25,5 @@ public class GridHex : MonoBehaviour, IDataHandler
     {
         containedUnits.Clear();
         isOccupied = false;
-    }
-
-    public int GetContainedMovementRangeData()
-    {
-        return ((IDataHandler)this).GetMovementRangeData(containedUnits);
     }
 }

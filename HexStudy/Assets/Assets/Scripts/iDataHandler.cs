@@ -9,6 +9,7 @@ using UnityEngine;
 /// </summary>
 public interface IDataHandler
 {
+    public List<UnitSO> containedUnits { get; set; }
     /// <summary>
     /// Stores a list of contained units.
     /// </summary>
@@ -32,12 +33,12 @@ public interface IDataHandler
     /// </summary>
     /// <param name="units">Contained unitSOs</param>
     /// <returns>The smallest movement range of contained units</returns>
-    public int GetMovementRangeData(List<UnitSO> units)
+    public int GetMovementRangeData()
     {
-        if (units.Count == 0) { return 0; }
+        if (containedUnits.Count == 0) { return 0; }
         int minRange;
-        minRange = units[0].MovementRange;
-        foreach (UnitSO unit in units)
+        minRange = containedUnits[0].MovementRange;
+        foreach (UnitSO unit in containedUnits)
         {
             if (unit.MovementRange < minRange)
             {
