@@ -12,17 +12,14 @@ public class GridGenerator : MonoBehaviour
     public HexRenderer hexRenderer;
     public bool isPrefabValid;
 
-    private Vector2 HexWidthDepth;
-
-
     /// <summary>
     /// number of tiles along x axis of grid
     /// </summary>
-    [SerializeField] private int width;
+    [SerializeField] private int tilesPerRow;
     /// <summary>
     /// number of tiles along z axis of grid
     /// </summary>
-    [SerializeField] private int depth;
+    [SerializeField] private int tilesPerColumn;
     private GameObject[,] hexArray;
     /// <summary>
     /// Hexes can either have pointed tops or flat sides. True if hex is a flat top variant.
@@ -45,8 +42,8 @@ public class GridGenerator : MonoBehaviour
     private MeshShapeVerifier HexagonalShapeVerifier;
 
     public GameObject[,] HexArray { get => hexArray; set => hexArray = value; }
-    public int Width { get => width; set => width = value; }
-    public int Depth { get => depth; set => depth = value; }
+    public int Width { get => tilesPerRow; set => tilesPerRow = value; }
+    public int Depth { get => tilesPerColumn; set => tilesPerColumn = value; }
 
     private void Awake()
     {
