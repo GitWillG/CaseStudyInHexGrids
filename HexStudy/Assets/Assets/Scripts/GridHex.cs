@@ -25,8 +25,8 @@ public class GridHex : MonoBehaviour, IDataHandler
         isOccupied = false;
     }
 
-    public int GetMovementRangeData(List<UnitSO> units)
+    public int GetContainedMovementRangeData()
     {
-        return ((IDataHandler)this).GetMovementRangeData(units);
+        return ((IDataHandler)this).GetMovementRangeData(containedUnits);
     }
 }

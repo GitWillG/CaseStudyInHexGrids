@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "CreateUnit", menuName = "Assets/Create/CreateUnit", order = 1)]
 public class UnitSO : ScriptableObject, IMoveable
 {
     [SerializeField] private int movementRange;
