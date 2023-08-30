@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitSO : ScriptableObject, iMoveable
+public class UnitSO : ScriptableObject, IMoveable
 {
     [SerializeField] private int movementRange;
     [SerializeField] private string unitName;
