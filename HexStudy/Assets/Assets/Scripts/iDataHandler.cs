@@ -47,6 +47,7 @@ public interface IDataHandler
         }
         return minRange;
     }
+    public Vector3 GetHexRoofPosition();
 
 }
 

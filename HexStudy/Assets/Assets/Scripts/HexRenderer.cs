@@ -181,6 +181,7 @@ public class HexRenderer : MonoBehaviour
         hexRenderer.isFlatTopped = isFlatTopped;
         hexRenderer.HexMaterial = HexMaterial;
         hexRenderer.DrawMesh();
+        hex.AddComponent<GridHex>();
 
         return hex;
     }

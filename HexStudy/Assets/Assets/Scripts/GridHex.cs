@@ -6,6 +6,7 @@ public class GridHex : MonoBehaviour, IDataHandler
 {
     private List<UnitSO> containedUnits;
     public bool isOccupied;
+    public HexRenderer _hexRenderer;
 
     List<UnitSO> IDataHandler.containedUnits { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
@@ -25,5 +26,11 @@ public class GridHex : MonoBehaviour, IDataHandler
     {
         containedUnits.Clear();
         isOccupied = false;
+    }
+
+    public Vector3 GetHexRoofPosition()
+    {
+        float yPosition = _hexRenderer.Height / 2;
+        return new Vector3(transform.position.x, yPosition, transform.position.z);
     }
 }
