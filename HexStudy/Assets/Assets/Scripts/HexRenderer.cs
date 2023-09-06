@@ -182,6 +182,8 @@ public class HexRenderer : MonoBehaviour
         hexRenderer.HexMaterial = HexMaterial;
         hexRenderer.DrawMesh();
         hex.AddComponent<GridHex>();
+        hex.layer = LayerMask.NameToLayer("Hex");
+        hex.AddComponent<MeshCollider>();
 
         return hex;
     }

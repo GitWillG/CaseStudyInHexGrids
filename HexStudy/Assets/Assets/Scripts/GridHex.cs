@@ -7,9 +7,14 @@ public class GridHex : MonoBehaviour, IDataHandler
     private List<UnitSO> containedUnits;
     public bool isOccupied;
     public HexRenderer _hexRenderer;
+    public int minRange;
 
     List<UnitSO> IDataHandler.containedUnits { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
+    private void Awake()
+    {
+        containedUnits = new List<UnitSO>();
+    }
     public List<UnitSO> GetData()
     {
         if (containedUnits == null) { return null; }
@@ -18,7 +23,10 @@ public class GridHex : MonoBehaviour, IDataHandler
 
     public void RegisterData(List<UnitSO> units)
     {
-        containedUnits = units;
+        foreach (UnitSO unit in units)
+        {
+            containedUnits.Add(unit);
+        }
         isOccupied = true;
     }
 
