@@ -39,18 +39,20 @@ public class GridGenerator : MonoBehaviour
     /// Rotation for hex prefab depending on if it is a pointed top hex or a flat top hex
     /// </summary>
     private float hexRotation;
-    private MeshShapeVerifier HexagonalShapeVerifier;
+    private MeshShapeVerifier hexagonalShapeVerifier;
+    private List<GameObject> generatedHexes = new List<GameObject>();
 
     public GameObject[,] HexArray { get => hexArray; set => hexArray = value; }
     public int Width { get => tilesPerRow; set => tilesPerRow = value; }
     public int Depth { get => tilesPerColumn; set => tilesPerColumn = value; }
+    public List<GameObject> GeneratedHexes { get => generatedHexes; set => generatedHexes = value; }
 
     private void Awake()
     {
-        HexagonalShapeVerifier = transform.GetComponent<MeshShapeVerifier>();
+        hexagonalShapeVerifier = transform.GetComponent<MeshShapeVerifier>();
         if (hexPrefab != null)
         {
-            isPrefabValid = HexagonalShapeVerifier.VerifyHexagonalMesh(hexPrefab);
+            isPrefabValid = hexagonalShapeVerifier.VerifyHexagonalMesh(hexPrefab);
         }  
     }
     private void Start()
@@ -61,7 +63,8 @@ public class GridGenerator : MonoBehaviour
         }
         else
         {
-            isFlatTopped = hexRenderer.ReturnHexDimensions(out hexWidth, out hexDepth);
+            isFlatTopped = hexRenderer.GenerateHexagonalPrismMeshAndReturnHexOrientation(out hexWidth, out hexDepth);
+            Debug.Log($"Generating new mesh with dimensions of [{hexWidth}] width by [{hexDepth}] depth");
         }
         CalculateOrientationDerivatives();
         DefaultGeneration();
@@ -80,7 +83,7 @@ public class GridGenerator : MonoBehaviour
     /// </summary>
     /// <param name="gridWidth">number of hexes along the x axis</param>
     /// <param name="gridDepth">number of hexes along the z axis</param>
-    public void GridGeneration(int gridWidth, int gridDepth)
+    private void GridGeneration(int gridWidth, int gridDepth)
     {
         GameObject newHex;
         Width = gridWidth;
@@ -100,7 +103,7 @@ public class GridGenerator : MonoBehaviour
                     xPos += xOffset;
                 }
 
-                //If given prefab isn't valud render some defaults
+                //If given prefab isn't valid render some defaults
                 if (!isPrefabValid)
                 {
                     newHex = hexRenderer.RenderHex();
@@ -125,12 +128,11 @@ public class GridGenerator : MonoBehaviour
                 newHex.transform.SetPositionAndRotation(new Vector3(xPos, 0, z * zOffset), Quaternion.Euler(0, hexRotation, 0));
                 newHex.transform.SetParent(this.gameObject.transform);
                 HexArray[x, z] = newHex.gameObject;
+                GeneratedHexes.Add(newHex);
             }
         }
     }
 
-
-    //TODO: Move hexagonal verification into it's own class
 
     /// <summary>
     /// Gets the width and depth of a given hexagonal prefab from the mesh. Also derives Z and X axis offsets. Assumes prefab is a true hexagonal shape.
@@ -175,5 +177,16 @@ public class GridGenerator : MonoBehaviour
         hexRotation = isFlatTopped ? 90 : 0;
     }
 
-  
+    /// <summary>
+    /// Resets the grid and cleans up all pieces.
+    /// </summary>
+    private void ResetGrid()
+    {
+        foreach (GameObject gridPiece in generatedHexes)
+        {
+            Destroy(gridPiece.gameObject);
+        }
+        generatedHexes.Clear();
+    }
+
 }

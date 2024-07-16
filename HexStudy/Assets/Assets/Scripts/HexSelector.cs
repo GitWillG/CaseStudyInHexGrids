@@ -33,9 +33,12 @@ public class HexSelector : MonoBehaviour
     private void SelectHex(GridHex hoveredHex)
     {
         selectedHex = hoveredHex;
-        if (selectedHex.isOccupied)
+        if (!selectedHex.isOccupied)
         {
+            Vector3 _topOfHexPosition = selectedHex.topOfHexPosition;
             hoveredHex.RegisterData(test);
+            GameObject newUnit = Instantiate(test[0].UnitPrefab, selectedHex.transform);
+            newUnit.transform.position = _topOfHexPosition;
         }
         else
         {

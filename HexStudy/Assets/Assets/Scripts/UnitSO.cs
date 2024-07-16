@@ -12,6 +12,5 @@ public class UnitSO : ScriptableObject, IMoveable
     [SerializeField] private int unitDamage;
     public int MovementRange => movementRange;
 
-
-    
+    public GameObject UnitPrefab { get => unitPrefab; set => unitPrefab = value; }
 }

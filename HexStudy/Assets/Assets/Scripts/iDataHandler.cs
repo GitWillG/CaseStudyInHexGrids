@@ -33,20 +33,7 @@ public interface IDataHandler
     /// </summary>
     /// <param name="units">Contained unitSOs</param>
     /// <returns>The smallest movement range of contained units</returns>
-    public int GetMovementRangeData()
-    {
-        if (containedUnits.Count == 0) { return 0; }
-        int minRange;
-        minRange = containedUnits[0].MovementRange;
-        foreach (UnitSO unit in containedUnits)
-        {
-            if (unit.MovementRange < minRange)
-            {
-                minRange = unit.MovementRange;
-            }
-        }
-        return minRange;
-    }
+    public int GetMovementRangeData();
     public Vector3 GetHexRoofPosition();
 
 }

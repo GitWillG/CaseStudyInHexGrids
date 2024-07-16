@@ -18,7 +18,9 @@ public struct Face
 
 }
 
-
+/// <summary>
+/// Class for generating at run time a new hexagonal mesh with given dimensions.
+/// </summary>
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 public class HexRenderer : MonoBehaviour
@@ -54,10 +56,7 @@ public class HexRenderer : MonoBehaviour
     /// </summary>
     private void OnValidate()
     {
-        if (Application.isPlaying)
-        {
-            DrawMesh();
-        }
+
     }
 
     /// <summary>
@@ -97,7 +96,6 @@ public class HexRenderer : MonoBehaviour
         {
             HexFaces.Add(CreateFace(InnerHexRadius, InnerHexRadius, Height / 2, -Height / 2f, point, false));
         }
-
     }
 
     /// <summary>
@@ -128,7 +126,7 @@ public class HexRenderer : MonoBehaviour
     }
 
     /// <summary>
-    /// Creates a 
+    /// Creates a face of the hexagon
     /// </summary>
     /// <param name="innerRadius">Internal hex Radius</param>
     /// <param name="outerRadius">Radius of entire hex</param>
@@ -203,7 +201,7 @@ public class HexRenderer : MonoBehaviour
     /// <param name="hexWidth">Calculated hex width</param>
     /// <param name="hexDepth">Calulated hex depth</param>
     /// <returns>True if hex is flat topped</returns>
-    public bool ReturnHexDimensions(out float hexWidth, out float hexDepth)
+    public bool GenerateHexagonalPrismMeshAndReturnHexOrientation(out float hexWidth, out float hexDepth)
     {
         hexDepth = HexRadius * 2;
         hexWidth = (float)(Math.Sqrt(3) * HexRadius);
@@ -211,4 +209,6 @@ public class HexRenderer : MonoBehaviour
 
         return isFlatTopped;
     }
+
+
 }

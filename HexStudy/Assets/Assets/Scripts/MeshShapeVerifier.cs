@@ -5,6 +5,11 @@ using UnityEngine;
 public class MeshShapeVerifier : MonoBehaviour
 {
 
+    // Set tolerance value; smaller is less tolerant of hexagonal-like structures. Larger value is more lenient in what is a "hexagonal prism"
+    private float parallelTolerance = 0.01f;
+
+    public float ParallelTolerance { get => parallelTolerance; set => parallelTolerance = value; }
+
     /// <summary>
     /// Checks that geometry of mesh alines with mathematical definition of a hexagonal prism.
     /// </summary>
@@ -18,10 +23,7 @@ public class MeshShapeVerifier : MonoBehaviour
         for (int i = 0; i < faces.Length; i++)
         {
             faces[i] = new int[] { mesh.triangles[i * 3], mesh.triangles[i * 3 + 1], mesh.triangles[i * 3 + 2] };
-        }
-
-        // Set tolerance value
-        float parallelTolerance = 0.01f;
+        }           
 
         // Perform checks for lateral faces ensuring that there are 6 lateral faces or a multiple therof 
         bool[] isFaceLateral = new bool[faces.Length];
@@ -34,7 +36,7 @@ public class MeshShapeVerifier : MonoBehaviour
             Vector3 faceNormal = Vector3.Cross(vertices[face[1]] - vertices[face[0]], vertices[face[2]] - vertices[face[0]]).normalized;
             float dot = Vector3.Dot(faceNormal, Vector3.up); // Assuming the hexagonal prism is aligned with the world up direction
 
-            if (Mathf.Abs(dot) < 1 - parallelTolerance)
+            if (Mathf.Abs(dot) < 1 - ParallelTolerance)
             {
                 isFaceLateral[i] = true;
                 lateralFaceCount++;
